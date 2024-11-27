@@ -1,3 +1,5 @@
-fn main() {
-    println!("Hello, world!");
-}
+mod ast;
+mod parser;
+mod tests;
+
+fn main() {}
