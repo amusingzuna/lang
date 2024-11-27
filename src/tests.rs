@@ -46,6 +46,19 @@ mod tests {
     }
 
     #[test]
+    fn parse_many() {
+        assert_eq!(
+            alphanumeric().many().parse("abc "),
+            Ok((vec!['a', 'b', 'c'], " "))
+        );
+
+        assert_eq!(
+            whitespace().many().parse("    a"),
+            Ok((vec![' ', ' ', ' ', ' '], "a"))
+        );
+    }
+
+    #[test]
     fn parse_list() {
         let a_or_b_parser = list(&['a', 'b']);
 
@@ -56,5 +69,13 @@ mod tests {
         let empty_list = list(&[]);
 
         assert_eq!(empty_list.parse("abc"), Err("List parser has no members"));
+    }
+
+    #[test]
+    fn parse_between() {
+        let between_parser = between(digit(), letter(), digit());
+
+        assert_eq!(between_parser.parse("1a1"), Ok(('a', "")));
+        assert_eq!(between_parser.parse("aa1"), Err("Character mismatch"));
     }
 }

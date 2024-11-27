@@ -19,6 +19,17 @@ impl<'input, T> Parser<'input, T> {
         Parser::new(move |input: &'input str| Ok((a, input)))
     }
 
+    pub fn many(self) -> Parser<'input, Vec<T>> {
+        Parser::new(move |mut input: &'input str| {
+            let mut results = Vec::new();
+            while let Ok((result, remaining)) = self.parse(input) {
+                results.push(result);
+                input = remaining;
+            }
+            Ok((results, input))
+        })
+    }
+
     pub fn and<U>(self, other: Parser<'input, U>) -> Parser<'input, (T, U)>
     where
         U: 'input,
@@ -122,4 +133,12 @@ pub fn digit() -> Parser<'static, char> {
 
 pub fn alphanumeric() -> Parser<'static, char> {
     letter().or(digit())
+}
+
+pub fn between(
+    a: Parser<'static, char>,
+    b: Parser<'static, char>,
+    c: Parser<'static, char>,
+) -> Parser<'static, char> {
+    return a.right(b).left(c);
 }
