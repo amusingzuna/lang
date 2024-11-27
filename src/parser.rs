@@ -19,14 +19,6 @@ impl<'input, T> Parser<'input, T> {
         Parser::new(move |input: &'input str| Ok((a, input)))
     }
 
-    pub fn impure(reason: &'static str) -> Self {
-        Parser::new(move |_| Err(reason))
-    }
-
-    pub fn or(self, other: Parser<'input, T>) -> Parser<'input, T> {
-        Parser::new(move |input: &'input str| self.parse(input).or_else(|_| other.parse(input)))
-    }
-
     pub fn and<U>(self, other: Parser<'input, U>) -> Parser<'input, (T, U)>
     where
         U: 'input,
@@ -64,6 +56,14 @@ impl<'input, T> Parser<'input, T> {
         })
     }
 
+    pub fn empty(reason: &'static str) -> Self {
+        Parser::new(move |_| Err(reason))
+    }
+
+    pub fn or(self, other: Parser<'input, T>) -> Parser<'input, T> {
+        Parser::new(move |input: &'input str| self.parse(input).or_else(|_| other.parse(input)))
+    }
+
     pub fn parse(&self, input: &'input str) -> Result<(T, &'input str), &'static str> {
         (self.0)(input)
     }
@@ -92,7 +92,7 @@ pub fn char(expected: char) -> Parser<'static, char> {
 pub fn list(allowed: &[char]) -> Parser<'static, char> {
     allowed
         .iter()
-        .fold(Parser::impure("List parser has no members"), |sum, x| {
+        .fold(Parser::empty("List parser has no members"), |sum, x| {
             sum.or(char(*x))
         })
 }
