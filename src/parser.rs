@@ -135,14 +135,14 @@ pub fn alphanumeric() -> Parser<'static, char> {
     letter().or(digit())
 }
 
-pub fn between(
-    a: Parser<'static, char>,
-    b: Parser<'static, char>,
-    c: Parser<'static, char>,
-) -> Parser<'static, char> {
+pub fn between<T>(
+    a: Parser<'static, T>,
+    b: Parser<'static, T>,
+    c: Parser<'static, T>,
+) -> Parser<'static, T> {
     return a.right(b).left(c);
 }
 
-pub fn option(a: char, b: Parser<'static, char>) -> Parser<'static, char> {
+pub fn option<T: Clone + Copy>(a: T, b: Parser<'static, T>) -> Parser<'static, T> {
     b.or(Parser::pure(a))
 }
