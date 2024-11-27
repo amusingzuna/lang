@@ -78,4 +78,12 @@ mod tests {
         assert_eq!(between_parser.parse("1a1"), Ok(('a', "")));
         assert_eq!(between_parser.parse("aa1"), Err("Character mismatch"));
     }
+
+    #[test]
+    fn parse_option() {
+        let option_parser = option('a', char('b'));
+
+        assert_eq!(option_parser.parse("ba"), Ok(('b', "a")));
+        assert_eq!(option_parser.parse("ab"), Ok(('a', "ab")));
+    }
 }

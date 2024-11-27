@@ -142,3 +142,7 @@ pub fn between(
 ) -> Parser<'static, char> {
     return a.right(b).left(c);
 }
+
+pub fn option(a: char, b: Parser<'static, char>) -> Parser<'static, char> {
+    b.or(Parser::pure(a))
+}
