@@ -90,9 +90,36 @@ pub fn char(expected: char) -> Parser<'static, char> {
 }
 
 pub fn list(allowed: &[char]) -> Parser<'static, char> {
-    allowed
-        .iter()
-        .fold(Parser::empty("List parser has no members"), |sum, x| {
-            sum.or(char(*x))
-        })
+    let fail = Parser::empty("List parser has no members");
+    allowed.iter().fold(fail, |sum, x| sum.or(char(*x)))
+}
+
+pub fn whitespace() -> Parser<'static, char> {
+    list(&[' ', '\n', '\t', '\r'])
+}
+
+pub fn lowercase() -> Parser<'static, char> {
+    list(&[
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+        's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    ])
+}
+
+pub fn uppercase() -> Parser<'static, char> {
+    list(&[
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
+        'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+    ])
+}
+
+pub fn letter() -> Parser<'static, char> {
+    lowercase().or(uppercase())
+}
+
+pub fn digit() -> Parser<'static, char> {
+    list(&['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
+}
+
+pub fn alphanumeric() -> Parser<'static, char> {
+    letter().or(digit())
 }
