@@ -143,4 +143,13 @@ mod tests {
         assert_eq!(symbol("if").parse("if"), Ok(("if".to_string(), "")));
         assert_eq!(symbol("if").parse("else"), Err("Character mismatch"));
     }
+
+    #[test]
+    fn parse_integer() {
+        assert_eq!(integer().parse("483943"), Ok(("483943".to_string(), "")));
+        assert_eq!(
+            integer().parse("483943jkds"),
+            Ok(("483943".to_string(), "jkds"))
+        );
+    }
 }

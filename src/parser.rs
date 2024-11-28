@@ -47,6 +47,15 @@ impl<'a, T> Parser<'a, T> {
         })
     }
 
+    pub fn some(self) -> Parser<'a, Vec<T>> {
+        self.clone().and(self.many()).map(|(head, rest)| {
+            let mut result = Vec::with_capacity(rest.len() + 1);
+            result.push(head);
+            result.extend(rest);
+            result
+        })
+    }
+
     pub fn and<U>(self, other: Parser<'a, U>) -> Parser<'a, (T, U)>
     where
         U: 'a,
@@ -207,4 +216,8 @@ pub fn identifier() -> Parser<'static, String> {
 
 pub fn symbol(a: &'static str) -> Parser<'static, String> {
     strip(string(a))
+}
+
+pub fn integer() -> Parser<'static, String> {
+    strip(digit().some().map(|c| c.into_iter().collect()))
 }
