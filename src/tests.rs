@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod library {
     use crate::parser::*;
 
     #[test]
@@ -143,6 +143,27 @@ mod tests {
         assert_eq!(symbol("if").parse("if"), Ok(("if".to_string(), "")));
         assert_eq!(symbol("if").parse("else"), Err("Character mismatch"));
     }
+
+    #[test]
+    fn parse_accumulators() {
+        assert_eq!(
+            tuple(identifier()).parse("(abc)"),
+            Ok(("abc".to_string(), ""))
+        );
+        assert_eq!(
+            set(identifier()).parse("[abc]"),
+            Ok(("abc".to_string(), ""))
+        );
+        assert_eq!(
+            block(identifier()).parse("{abc}"),
+            Ok(("abc".to_string(), ""))
+        );
+    }
+}
+
+#[cfg(test)]
+mod syntax {
+    use crate::syntax::*;
 
     #[test]
     fn parse_integer() {

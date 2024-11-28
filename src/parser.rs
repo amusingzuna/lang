@@ -218,6 +218,14 @@ pub fn symbol(a: &'static str) -> Parser<'static, String> {
     strip(string(a))
 }
 
-pub fn integer() -> Parser<'static, String> {
-    strip(digit().some().map(|c| c.into_iter().collect()))
+pub fn tuple<T>(a: Parser<'static, T>) -> Parser<'static, T> {
+    between(symbol("("), a, symbol(")"))
+}
+
+pub fn set<T>(a: Parser<'static, T>) -> Parser<'static, T> {
+    between(symbol("["), a, symbol("]"))
+}
+
+pub fn block<T>(a: Parser<'static, T>) -> Parser<'static, T> {
+    between(symbol("{"), a, symbol("}"))
 }
