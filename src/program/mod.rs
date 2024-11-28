@@ -1,46 +1,70 @@
-use crate::parser::*;
-
-use ast::*;
-use tokens::*;
-
 pub mod ast;
 pub mod tokens;
 
-pub fn primitive() -> Parser<'static, Type> {
-    identifier().map(|c| Type::Primitive(c))
+use prelude::*;
+
+pub mod types {
+    use super::prelude::*;
+
+    pub fn primitive() -> Parser<'static, Type> {
+        identifier().map(|c| Type::Primitive(c))
+    }
+
+    pub fn types() -> Parser<'static, Type> {
+        primitive()
+    }
 }
 
-pub fn types() -> Parser<'static, Type> {
-    primitive()
+pub mod literal {
+    use super::prelude::*;
+
+    pub fn integer_literal() -> Parser<'static, Literal> {
+        integer().map(|x| Literal::Integer(x))
+    }
+
+    pub fn literal() -> Parser<'static, Literal> {
+        integer_literal()
+    }
 }
 
-pub fn integer_literal() -> Parser<'static, Expression> {
-    integer().map(|x| Expression::Literal(x))
+pub mod expression {
+    use super::prelude::*;
+
+    pub fn expression() -> Parser<'static, Expression> {
+        literal().map(|x| Expression::Literal(x))
+    }
 }
 
-pub fn expression() -> Parser<'static, Expression> {
-    integer_literal()
+pub mod statement {
+    use super::prelude::*;
+
+    pub fn declare() -> Parser<'static, Statement> {
+        types()
+            .and(identifier())
+            .map(|(a, b)| Statement::Declare(a, b))
+    }
+
+    pub fn assignment() -> Parser<'static, Statement> {
+        identifier()
+            .left(equals())
+            .and(expression())
+            .map(|(name, expr)| Statement::Assignment(name, expr))
+    }
+
+    pub fn no_op() -> Parser<'static, Statement> {
+        Parser::pure(Statement::NoOp)
+    }
+
+    pub fn statement() -> Parser<'static, Statement> {
+        strip(declare().or(assignment()).or(no_op()))
+    }
 }
 
-pub fn declare() -> Parser<'static, Statement> {
-    types()
-        .and(identifier())
-        .map(|(a, b)| Statement::Declare(a, b))
-}
-
-pub fn assignment() -> Parser<'static, Statement> {
-    identifier()
-        .left(equals())
-        .and(expression())
-        .map(|(name, expr)| Statement::Assignment(name, expr))
-}
-
-pub fn no_op() -> Parser<'static, Statement> {
-    Parser::pure(Statement::NoOp)
-}
-
-pub fn statement() -> Parser<'static, Statement> {
-    strip(declare().or(assignment()).or(no_op()))
+pub mod prelude {
+    pub use super::ast::*;
+    pub use super::tokens::*;
+    pub use super::{expression::expression, literal::literal, statement::statement, types::types};
+    pub use crate::parser::*;
 }
 
 pub fn program() -> Parser<'static, Program> {

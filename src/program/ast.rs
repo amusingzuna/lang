@@ -4,8 +4,15 @@ pub enum Type {
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
+pub enum Literal {
+    Float(String),
+    Integer(String),
+    String(String),
+}
+
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Expression {
-    Literal(String),
+    Literal(Literal),
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]

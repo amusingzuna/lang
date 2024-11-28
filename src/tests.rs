@@ -180,7 +180,7 @@ mod library {
 
 #[cfg(test)]
 mod syntax {
-    use crate::program::{ast::*, *};
+    use crate::{ast::*, program, statement::*};
 
     #[test]
     fn parse_declare() {
@@ -198,7 +198,10 @@ mod syntax {
         assert_eq!(
             assignment().parse("a = 50"),
             Ok((
-                Statement::Assignment("a".to_string(), Expression::Literal("50".to_string())),
+                Statement::Assignment(
+                    "a".to_string(),
+                    Expression::Literal(Literal::Integer("50".to_string()))
+                ),
                 ""
             ))
         )
