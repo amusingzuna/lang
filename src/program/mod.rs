@@ -51,12 +51,20 @@ pub mod statement {
             .map(|(name, expr)| Statement::Assignment(name, expr))
     }
 
+    pub fn instantiate() -> Parser<'static, Statement> {
+        types()
+            .and(identifier())
+            .left(equals())
+            .and(expression())
+            .map(|((a, b), c)| Statement::Instantiate(a, b, c))
+    }
+
     pub fn no_op() -> Parser<'static, Statement> {
         Parser::pure(Statement::NoOp)
     }
 
     pub fn statement() -> Parser<'static, Statement> {
-        strip(declare().or(assignment()).or(no_op()))
+        strip(declare().or(assignment()).or(instantiate()).or(no_op()))
     }
 }
 

@@ -180,7 +180,23 @@ mod library {
 
 #[cfg(test)]
 mod syntax {
-    use crate::{ast::*, program, statement::*};
+    use crate::{ast::*, literal::integer_literal, program, statement::*, types::*};
+
+    #[test]
+    fn parse_primitive() {
+        assert_eq!(
+            primitive().parse("i32"),
+            Ok((Type::Primitive("i32".to_string()), ""))
+        );
+    }
+
+    #[test]
+    fn parse_literal() {
+        assert_eq!(
+            integer_literal().parse("12378"),
+            Ok((Literal::Integer("12378".to_string()), ""))
+        )
+    }
 
     #[test]
     fn parse_declare() {
@@ -199,6 +215,21 @@ mod syntax {
             assignment().parse("a = 50"),
             Ok((
                 Statement::Assignment(
+                    "a".to_string(),
+                    Expression::Literal(Literal::Integer("50".to_string()))
+                ),
+                ""
+            ))
+        )
+    }
+
+    #[test]
+    fn parse_instantiate() {
+        assert_eq!(
+            instantiate().parse("i32 a = 50"),
+            Ok((
+                Statement::Instantiate(
+                    Type::Primitive("i32".to_string()),
                     "a".to_string(),
                     Expression::Literal(Literal::Integer("50".to_string()))
                 ),
