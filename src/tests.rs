@@ -194,6 +194,17 @@ mod syntax {
     }
 
     #[test]
+    fn parse_assignment() {
+        assert_eq!(
+            assignment().parse("a = 50"),
+            Ok((
+                Statement::Assignment("a".to_string(), Expression::Literal("50".to_string())),
+                ""
+            ))
+        )
+    }
+
+    #[test]
     fn parse_program() {
         assert_eq!(
             program().parse("int a;"),

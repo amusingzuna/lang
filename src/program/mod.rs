@@ -14,10 +14,25 @@ pub fn types() -> Parser<'static, Type> {
     primitive()
 }
 
+pub fn integer_literal() -> Parser<'static, Expression> {
+    integer().map(|x| Expression::Literal(x))
+}
+
+pub fn expression() -> Parser<'static, Expression> {
+    integer_literal()
+}
+
 pub fn declare() -> Parser<'static, Statement> {
     types()
         .and(identifier())
         .map(|(a, b)| Statement::Declare(a, b))
+}
+
+pub fn assignment() -> Parser<'static, Statement> {
+    identifier()
+        .left(equals())
+        .and(expression())
+        .map(|(name, expr)| Statement::Assignment(name, expr))
 }
 
 pub fn no_op() -> Parser<'static, Statement> {
@@ -25,7 +40,7 @@ pub fn no_op() -> Parser<'static, Statement> {
 }
 
 pub fn statement() -> Parser<'static, Statement> {
-    strip(declare().or(no_op()))
+    strip(declare().or(assignment()).or(no_op()))
 }
 
 pub fn program() -> Parser<'static, Program> {
