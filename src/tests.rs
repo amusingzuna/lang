@@ -180,7 +180,7 @@ mod library {
 
 #[cfg(test)]
 mod syntax {
-    use crate::{ast::*, literal::integer_literal, program, statement::*, types::*};
+    use crate::{ast::*, literal::*, program, statement::*, types::*};
 
     #[test]
     fn parse_primitive() {
@@ -191,7 +191,15 @@ mod syntax {
     }
 
     #[test]
-    fn parse_literal() {
+    fn parse_float_literal() {
+        assert_eq!(
+            float_literal().parse("12378.5"),
+            Ok((Literal::Float("12378.5".to_string()), ""))
+        )
+    }
+
+    #[test]
+    fn parse_integer_literal() {
         assert_eq!(
             integer_literal().parse("12378"),
             Ok((Literal::Integer("12378".to_string()), ""))

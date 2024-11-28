@@ -18,12 +18,16 @@ pub mod types {
 pub mod literal {
     use super::prelude::*;
 
+    pub fn float_literal() -> Parser<'static, Literal> {
+        float().map(|x| Literal::Float(x))
+    }
+
     pub fn integer_literal() -> Parser<'static, Literal> {
         integer().map(|x| Literal::Integer(x))
     }
 
     pub fn literal() -> Parser<'static, Literal> {
-        integer_literal()
+        float_literal().or(integer_literal())
     }
 }
 

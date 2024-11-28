@@ -7,7 +7,6 @@ pub enum Type {
 pub enum Literal {
     Float(String),
     Integer(String),
-    String(String),
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
