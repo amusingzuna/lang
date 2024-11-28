@@ -64,7 +64,7 @@ pub mod statement {
     }
 
     pub fn statement() -> Parser<'static, Statement> {
-        strip(declare().or(assignment()).or(instantiate()).or(no_op()))
+        strip(instantiate().or(assignment()).or(declare()).or(no_op()))
     }
 }
 

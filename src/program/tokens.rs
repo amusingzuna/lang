@@ -1,6 +1,6 @@
 use crate::parser::*;
 
-#[derive(Clone)]
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Token {
     Equals,
     Semicolon,
