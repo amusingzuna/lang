@@ -173,4 +173,12 @@ mod syntax {
             Ok(("483943".to_string(), "jkds"))
         );
     }
+
+    #[test]
+    fn parse_float() {
+        assert_eq!(float().parse("12.32f"), Ok(("12.32".to_string(), "")));
+        assert_eq!(float().parse("12.32"), Ok(("12.32".to_string(), "")));
+        assert_eq!(float().parse("12."), Ok(("12.".to_string(), "")));
+        assert_eq!(float().parse("12"), Err("Character mismatch"));
+    }
 }

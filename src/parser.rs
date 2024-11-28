@@ -106,6 +106,12 @@ impl<'a, T> Parser<'a, T> {
     }
 }
 
+impl<'a> Parser<'a, Vec<char>> {
+    pub fn qualify(self) -> Parser<'a, String> {
+        self.map(|x| x.into_iter().collect())
+    }
+}
+
 pub fn any() -> Parser<'static, char> {
     Parser::new(move |input: &'static str| {
         let mut chars = input.chars();
