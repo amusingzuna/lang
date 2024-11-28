@@ -3,6 +3,18 @@ mod tests {
     use crate::parser::*;
 
     #[test]
+    fn functor_parsers() {
+        assert_eq!(
+            alphanumeric().map(|c| c.is_alphabetic()).parse("a"),
+            Ok((true, ""))
+        );
+        assert_eq!(
+            alphanumeric().map(|c| c.is_alphabetic()).parse("2"),
+            Ok((false, ""))
+        );
+    }
+
+    #[test]
     fn applicative_parsers() {
         assert_eq!(Parser::pure('a').parse("bc"), Ok(('a', "bc")));
         assert_eq!(Parser::pure('b').parse(""), Ok(('b', "")));
@@ -80,10 +92,32 @@ mod tests {
     }
 
     #[test]
-    fn parse_option() {
-        let option_parser = option('a', char('b'));
+    fn parse_otherwise() {
+        let option_parser = otherwise(char('b'), 'a');
 
         assert_eq!(option_parser.parse("ba"), Ok(('b', "a")));
         assert_eq!(option_parser.parse("ab"), Ok(('a', "ab")));
+    }
+
+    #[test]
+    fn parse_delimited() {
+        let delimited_parser = delimited(alphanumeric(), char(','));
+
+        assert_eq!(
+            delimited_parser.parse("1,2,3,4"),
+            Ok((vec!['1', '2', '3', '4'], ""))
+        );
+
+        assert_eq!(
+            delimited_parser.parse("1,2,3,,5"),
+            Ok((vec!['1', '2', '3'], ",,5"))
+        );
+    }
+
+    #[test]
+    fn parse_strip() {
+        let strip_parser = strip(alphanumeric());
+
+        assert_eq!(strip_parser.parse("  a  "), Ok(('a', "")));
     }
 }

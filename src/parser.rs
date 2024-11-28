@@ -1,26 +1,43 @@
-pub struct Parser<'input, T>(
-    Box<dyn Fn(&'input str) -> Result<(T, &'input str), &'static str> + 'input>,
-)
-where
-    T: 'input;
+use std::sync::Arc;
 
-impl<'input, T> Parser<'input, T> {
+pub struct Parser<'input, T: 'input>(
+    Arc<dyn Fn(&'input str) -> Result<(T, &'input str), &'static str> + 'input>,
+);
+
+impl<'input, T: 'input> Clone for Parser<'input, T> {
+    fn clone(&self) -> Self {
+        Self(self.0.clone())
+    }
+}
+
+impl<'a, T> Parser<'a, T> {
     pub fn new<F>(parser: F) -> Self
     where
-        F: 'input + Fn(&'input str) -> Result<(T, &'input str), &'static str>,
+        F: 'a + Fn(&'a str) -> Result<(T, &'a str), &'static str>,
     {
-        Self(Box::new(parser))
+        Self(Arc::new(parser))
+    }
+
+    pub fn map<U, F>(self, func: F) -> Parser<'a, U>
+    where
+        F: 'a + Fn(T) -> U,
+        U: 'a,
+    {
+        Parser::new(move |input: &'a str| {
+            self.parse(input)
+                .map(|(result, remaining)| (func(result), remaining))
+        })
     }
 
     pub fn pure(a: T) -> Self
     where
-        T: Clone + Copy,
+        T: 'a + Clone,
     {
-        Parser::new(move |input: &'input str| Ok((a, input)))
+        Parser::new(move |input: &'a str| Ok((a.clone(), input)))
     }
 
-    pub fn many(self) -> Parser<'input, Vec<T>> {
-        Parser::new(move |mut input: &'input str| {
+    pub fn many(self) -> Parser<'a, Vec<T>> {
+        Parser::new(move |mut input: &'a str| {
             let mut results = Vec::new();
             while let Ok((result, remaining)) = self.parse(input) {
                 results.push(result);
@@ -30,11 +47,11 @@ impl<'input, T> Parser<'input, T> {
         })
     }
 
-    pub fn and<U>(self, other: Parser<'input, U>) -> Parser<'input, (T, U)>
+    pub fn and<U>(self, other: Parser<'a, U>) -> Parser<'a, (T, U)>
     where
-        U: 'input,
+        U: 'a,
     {
-        Parser::new(move |input: &'input str| {
+        Parser::new(move |input: &'a str| {
             self.parse(input).and_then(|(result_a, remaining_a)| {
                 other
                     .parse(remaining_a)
@@ -43,25 +60,25 @@ impl<'input, T> Parser<'input, T> {
         })
     }
 
-    pub fn left<U>(self, other: Parser<'input, U>) -> Parser<'input, T>
+    pub fn left<U>(self, other: Parser<'a, U>) -> Parser<'a, T>
     where
-        U: 'input,
+        U: 'a,
     {
         let merge = self.and(other);
 
-        Parser::new(move |input: &'input str| match merge.parse(input) {
+        Parser::new(move |input: &'a str| match merge.parse(input) {
             Ok(((left, _), remaining)) => Ok((left, remaining)),
             Err(reason) => Err(reason),
         })
     }
 
-    pub fn right<U>(self, other: Parser<'input, U>) -> Parser<'input, U>
+    pub fn right<U>(self, other: Parser<'a, U>) -> Parser<'a, U>
     where
-        U: 'input,
+        U: 'a,
     {
         let merge = self.and(other);
 
-        Parser::new(move |input: &'input str| match merge.parse(input) {
+        Parser::new(move |input: &'a str| match merge.parse(input) {
             Ok(((_, right), remaining)) => Ok((right, remaining)),
             Err(reason) => Err(reason),
         })
@@ -71,11 +88,11 @@ impl<'input, T> Parser<'input, T> {
         Parser::new(move |_| Err(reason))
     }
 
-    pub fn or(self, other: Parser<'input, T>) -> Parser<'input, T> {
-        Parser::new(move |input: &'input str| self.parse(input).or_else(|_| other.parse(input)))
+    pub fn or(self, other: Parser<'a, T>) -> Parser<'a, T> {
+        Parser::new(move |input: &'a str| self.parse(input).or_else(|_| other.parse(input)))
     }
 
-    pub fn parse(&self, input: &'input str) -> Result<(T, &'input str), &'static str> {
+    pub fn parse(&self, input: &'a str) -> Result<(T, &'a str), &'static str> {
         (self.0)(input)
     }
 }
@@ -135,14 +152,31 @@ pub fn alphanumeric() -> Parser<'static, char> {
     letter().or(digit())
 }
 
-pub fn between<T>(
+pub fn between<T, U, P>(
     a: Parser<'static, T>,
-    b: Parser<'static, T>,
-    c: Parser<'static, T>,
-) -> Parser<'static, T> {
-    return a.right(b).left(c);
+    b: Parser<'static, U>,
+    c: Parser<'static, P>,
+) -> Parser<'static, U> {
+    a.right(b).left(c)
 }
 
-pub fn option<T: Clone + Copy>(a: T, b: Parser<'static, T>) -> Parser<'static, T> {
+pub fn otherwise<T: Clone>(b: Parser<'static, T>, a: T) -> Parser<'static, T> {
     b.or(Parser::pure(a))
+}
+
+pub fn delimited<T: Clone, U>(
+    a: Parser<'static, T>,
+    sep: Parser<'static, U>,
+) -> Parser<'static, Vec<T>> {
+    otherwise(
+        a.clone().and(sep.right(a).many()).map(|(first, mut rest)| {
+            rest.insert(0, first);
+            rest
+        }),
+        vec![],
+    )
+}
+
+pub fn strip<T>(a: Parser<'static, T>) -> Parser<'static, T> {
+    between(whitespace().many(), a, whitespace().many())
 }
