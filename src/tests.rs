@@ -120,4 +120,27 @@ mod tests {
 
         assert_eq!(strip_parser.parse("  a  "), Ok(('a', "")));
     }
+
+    #[test]
+    fn parse_string() {
+        let string_parser = string("hello");
+
+        assert_eq!(string_parser.parse("hello"), Ok(("hello".to_string(), "")));
+        assert_eq!(string_parser.parse("yello"), Err("Character mismatch"));
+    }
+
+    #[test]
+    fn parse_identifier() {
+        assert_eq!(identifier().parse("1id"), Err("Character mismatch"));
+        assert_eq!(
+            identifier().parse("helloIAmIdent"),
+            Ok(("helloIAmIdent".to_string(), ""))
+        );
+    }
+
+    #[test]
+    fn parse_symbol() {
+        assert_eq!(symbol("if").parse("if"), Ok(("if".to_string(), "")));
+        assert_eq!(symbol("if").parse("else"), Err("Character mismatch"));
+    }
 }

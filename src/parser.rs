@@ -180,3 +180,31 @@ pub fn delimited<T: Clone, U>(
 pub fn strip<T>(a: Parser<'static, T>) -> Parser<'static, T> {
     between(whitespace().many(), a, whitespace().many())
 }
+
+pub fn string(input: &'static str) -> Parser<'static, String> {
+    if input.is_empty() {
+        return Parser::pure("".to_string());
+    }
+
+    char(input.chars().next().unwrap())
+        .and(string(&input[1..]))
+        .map(|(c, rest)| {
+            let mut result = "".to_string();
+            result.push(c);
+            result.push_str(&rest);
+            result
+        })
+}
+
+pub fn identifier() -> Parser<'static, String> {
+    strip(letter().and(alphanumeric().many()).map(|(first, rest)| {
+        let mut result = String::new();
+        result.push(first);
+        result.push_str(&rest.iter().collect::<String>());
+        result
+    }))
+}
+
+pub fn symbol(a: &'static str) -> Parser<'static, String> {
+    strip(string(a))
+}
