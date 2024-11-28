@@ -1,9 +1,10 @@
-use crate::ast::*;
 use crate::parser::*;
 
-pub fn semicolon() -> Parser<'static, String> {
-    symbol(";")
-}
+use ast::*;
+use tokens::*;
+
+pub mod ast;
+pub mod tokens;
 
 pub fn primitive() -> Parser<'static, Type> {
     identifier().map(|c| Type::Primitive(c))

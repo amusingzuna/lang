@@ -1,8 +1,7 @@
-use syntax::program;
+use crate::program::*;
 
-mod ast;
 mod parser;
-mod syntax;
+mod program;
 mod tests;
 
 fn main() {

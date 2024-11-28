@@ -180,7 +180,7 @@ mod library {
 
 #[cfg(test)]
 mod syntax {
-    use crate::{ast::*, syntax::*};
+    use crate::program::{ast::*, *};
 
     #[test]
     fn parse_declare() {

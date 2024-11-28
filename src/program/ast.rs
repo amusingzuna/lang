@@ -4,8 +4,12 @@ pub enum Type {
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
+pub enum Expression {}
+
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Statement {
     Declare(Type, String),
+    Assignment(String, Expression),
     NoOp,
 }
 
