@@ -1,7 +1,13 @@
-#[derive(Debug, Clone)]
+#[derive(PartialEq, Eq, Debug, Clone)]
+pub enum Type {
+    Primitive(String),
+}
+
+#[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Statement {
+    Declare(Type, String),
     NoOp,
 }
 
-#[derive(Debug)]
+#[derive(PartialEq, Eq, Debug)]
 pub struct Program(pub Vec<Statement>);

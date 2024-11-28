@@ -177,3 +177,33 @@ mod library {
         assert_eq!(float().parse("12"), Err("Character mismatch"));
     }
 }
+
+#[cfg(test)]
+mod syntax {
+    use crate::{ast::*, syntax::*};
+
+    #[test]
+    fn parse_declare() {
+        assert_eq!(
+            declare().parse("int a"),
+            Ok((
+                Statement::Declare(Type::Primitive("int".to_string()), "a".to_string()),
+                ""
+            ))
+        )
+    }
+
+    #[test]
+    fn parse_program() {
+        assert_eq!(
+            program().parse("int a;"),
+            Ok((
+                Program(vec![Statement::Declare(
+                    Type::Primitive("int".to_string()),
+                    "a".to_string()
+                )]),
+                ""
+            ))
+        );
+    }
+}

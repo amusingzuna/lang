@@ -7,8 +7,6 @@ mod tests;
 
 fn main() {
     let program_parser = program();
-
-    let ast = program_parser.parse(";;");
-
+    let ast = program_parser.parse("i32 a;");
     println!("{:?}", ast);
 }
