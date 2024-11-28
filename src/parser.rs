@@ -235,3 +235,25 @@ pub fn set<T>(a: Parser<'static, T>) -> Parser<'static, T> {
 pub fn block<T>(a: Parser<'static, T>) -> Parser<'static, T> {
     between(symbol("{"), a, symbol("}"))
 }
+
+pub fn integer() -> Parser<'static, String> {
+    strip(digit().some().map(|c| c.into_iter().collect()))
+}
+
+pub fn float() -> Parser<'static, String> {
+    strip(
+        digit()
+            .some()
+            .qualify()
+            .and(symbol("."))
+            .and(digit().many().qualify())
+            .left(symbol("f").many())
+            .map(|((a, b), c)| {
+                let mut result = String::new();
+                result.push_str(a.as_str());
+                result.push_str(b.as_str());
+                result.push_str(c.as_str());
+                result
+            }),
+    )
+}

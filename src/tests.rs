@@ -159,11 +159,6 @@ mod library {
             Ok(("abc".to_string(), ""))
         );
     }
-}
-
-#[cfg(test)]
-mod syntax {
-    use crate::syntax::*;
 
     #[test]
     fn parse_integer() {
