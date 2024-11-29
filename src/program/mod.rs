@@ -27,7 +27,13 @@ pub mod literal {
     }
 
     pub fn bool_literal<'a>() -> Parser<'a, Literal> {
-        true_key().or(false_key()).map(|x| Literal::Boolean(x))
+        true_key().or(false_key()).map(|x| {
+            Literal::Boolean(match x {
+                Token::True => true,
+                Token::False => false,
+                _ => panic!("Nah bruh what how you do this"),
+            })
+        })
     }
 
     pub fn reference_literal<'a>() -> Parser<'a, Literal> {

@@ -1,5 +1,3 @@
-use super::Token;
-
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Type {
     Atomic(String),
@@ -9,7 +7,7 @@ pub enum Type {
 pub enum Literal {
     Float(String),
     Integer(String),
-    Boolean(Token),
+    Boolean(bool),
     Reference(String),
 }
 

@@ -186,7 +186,6 @@ mod syntax {
         literal::*,
         program,
         statement::*,
-        tokens::Token,
         types::*,
     };
 
@@ -218,7 +217,7 @@ mod syntax {
     fn parse_boolean_literal() {
         assert_eq!(
             bool_literal().parse("true"),
-            Ok((Literal::Boolean(Token::True), ""))
+            Ok((Literal::Boolean(true), ""))
         )
     }
 
