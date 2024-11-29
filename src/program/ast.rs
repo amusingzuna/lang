@@ -18,7 +18,7 @@ pub enum Expression {
 pub enum Statement {
     Declare(Option<Type>, String),
     Assignment(String, Expression),
-    Instantiate(Type, String, Expression),
+    Instantiate(Option<Type>, String, Expression),
     NoOp,
 }
 

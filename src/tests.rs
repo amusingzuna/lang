@@ -238,16 +238,27 @@ mod syntax {
     #[test]
     fn parse_instantiate() {
         assert_eq!(
-            instantiate().parse("i32 a = 50"),
+            instantiate().parse("let a: i32 = 50"),
             Ok((
                 Statement::Instantiate(
-                    Type::Primitive("i32".to_string()),
+                    Some(Type::Primitive("i32".to_string())),
                     "a".to_string(),
                     Expression::Literal(Literal::Integer("50".to_string()))
                 ),
                 ""
             ))
-        )
+        );
+        assert_eq!(
+            instantiate().parse("let a = 50"),
+            Ok((
+                Statement::Instantiate(
+                    None,
+                    "a".to_string(),
+                    Expression::Literal(Literal::Integer("50".to_string()))
+                ),
+                ""
+            ))
+        );
     }
 
     #[test]

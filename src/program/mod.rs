@@ -57,11 +57,12 @@ pub mod statement {
     }
 
     pub fn instantiate() -> Parser<'static, Statement> {
-        types()
-            .and(identifier())
+        r#let()
+            .right(identifier())
+            .and(otherwise(colon().right(types()).map(|x| Some(x)), None))
             .left(equals())
             .and(expression())
-            .map(|((a, b), c)| Statement::Instantiate(a, b, c))
+            .map(|((a, b), c)| Statement::Instantiate(b, a, c))
     }
 
     pub fn no_op() -> Parser<'static, Statement> {
