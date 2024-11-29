@@ -8,7 +8,7 @@ pub enum Token {
     Semicolon,
 }
 
-pub fn r#let() -> Parser<'static, Token> {
+pub fn let_key() -> Parser<'static, Token> {
     symbol("let").right(Parser::pure(Token::Let))
 }
 

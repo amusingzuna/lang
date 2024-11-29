@@ -6,6 +6,6 @@ mod tests;
 
 fn main() {
     let program_parser = program();
-    let ast = program_parser.parse("a = a213;");
+    let ast = program_parser.parse("a = 12;");
     println!("{:?}", ast);
 }

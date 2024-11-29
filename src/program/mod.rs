@@ -40,8 +40,12 @@ pub mod literal {
 pub mod expression {
     use super::prelude::*;
 
-    pub fn expression() -> Parser<'static, Expression> {
+    pub fn literal_expr() -> Parser<'static, Expression> {
         literal().map(|x| Expression::Literal(x))
+    }
+
+    pub fn expression() -> Parser<'static, Expression> {
+        literal_expr()
     }
 }
 
@@ -49,7 +53,7 @@ pub mod statement {
     use super::prelude::*;
 
     pub fn declare() -> Parser<'static, Statement> {
-        r#let()
+        let_key()
             .right(identifier())
             .and(otherwise(colon().right(types()).map(|x| Some(x)), None))
             .map(|(a, b)| Statement::Declare(b, a))
@@ -63,7 +67,7 @@ pub mod statement {
     }
 
     pub fn instantiate() -> Parser<'static, Statement> {
-        r#let()
+        let_key()
             .right(identifier())
             .and(otherwise(colon().right(types()).map(|x| Some(x)), None))
             .left(equals())
