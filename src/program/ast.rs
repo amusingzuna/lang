@@ -12,6 +12,7 @@ pub enum Literal {
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Expression {
+    Block(Vec<Statement>),
     Literal(Literal),
 }
 

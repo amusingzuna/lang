@@ -18,6 +18,16 @@ impl<'a, T> Parser<'a, T> {
         Self(Arc::new(parser))
     }
 
+    pub fn lazy<F>(parser_factory: F) -> Self
+    where
+        F: Fn() -> Self + 'a,
+    {
+        Parser::new(move |input: &'a str| {
+            let parser = parser_factory();
+            parser.parse(input)
+        })
+    }
+
     pub fn map<U, F>(self, func: F) -> Parser<'a, U>
     where
         F: 'a + Fn(T) -> U,

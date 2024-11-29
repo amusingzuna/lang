@@ -44,8 +44,12 @@ pub mod expression {
         literal().map(|x| Expression::Literal(x))
     }
 
+    pub fn block_expr() -> Parser<'static, Expression> {
+        between(symbol("{"), statement(), symbol("}")).map(|_| Expression::Block(Vec::new()))
+    }
+
     pub fn expression() -> Parser<'static, Expression> {
-        literal_expr()
+        Parser::lazy(|| literal_expr().or(block_expr()))
     }
 }
 
@@ -80,7 +84,7 @@ pub mod statement {
     }
 
     pub fn statement() -> Parser<'static, Statement> {
-        strip(instantiate().or(assignment()).or(declare()).or(no_op()))
+        Parser::lazy(|| strip(instantiate().or(assignment()).or(declare()).or(no_op())))
     }
 }
 
