@@ -26,8 +26,14 @@ pub mod literal {
         integer().map(|x| Literal::Integer(x))
     }
 
+    pub fn reference_literal() -> Parser<'static, Literal> {
+        identifier().map(|x| Literal::Reference(x))
+    }
+
     pub fn literal() -> Parser<'static, Literal> {
-        float_literal().or(integer_literal())
+        float_literal()
+            .or(integer_literal())
+            .or(reference_literal())
     }
 }
 
