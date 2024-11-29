@@ -166,7 +166,7 @@ pub fn uppercase() -> Parser<'static, char> {
 }
 
 pub fn letter() -> Parser<'static, char> {
-    lowercase().or(uppercase())
+    lowercase().or(uppercase()).or(char('_'))
 }
 
 pub fn digit() -> Parser<'static, char> {
