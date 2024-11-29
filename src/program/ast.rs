@@ -1,6 +1,6 @@
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Type {
-    Primitive(String),
+    Atomic(String),
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]

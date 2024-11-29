@@ -6,12 +6,12 @@ use prelude::*;
 pub mod types {
     use super::prelude::*;
 
-    pub fn primitive<'a>() -> Parser<'a, Type> {
-        identifier().map(|c| Type::Primitive(c))
+    pub fn atomic<'a>() -> Parser<'a, Type> {
+        identifier().map(|c| Type::Atomic(c))
     }
 
     pub fn types<'a>() -> Parser<'a, Type> {
-        primitive()
+        atomic()
     }
 }
 

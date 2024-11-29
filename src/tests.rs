@@ -192,8 +192,8 @@ mod syntax {
     #[test]
     fn parse_primitive() {
         assert_eq!(
-            primitive().parse("i32"),
-            Ok((Type::Primitive("i32".to_string()), ""))
+            atomic().parse("i32"),
+            Ok((Type::Atomic("i32".to_string()), ""))
         );
     }
 
@@ -249,7 +249,7 @@ mod syntax {
         assert_eq!(
             declare().parse("let a: int"),
             Ok((
-                Statement::Declare(Some(Type::Primitive("int".to_string())), "a".to_string()),
+                Statement::Declare(Some(Type::Atomic("int".to_string())), "a".to_string()),
                 ""
             ))
         );
@@ -279,7 +279,7 @@ mod syntax {
             instantiate().parse("let a: i32 = 50"),
             Ok((
                 Statement::Instantiate(
-                    Some(Type::Primitive("i32".to_string())),
+                    Some(Type::Atomic("i32".to_string())),
                     "a".to_string(),
                     Expression::Literal(Literal::Integer("50".to_string()))
                 ),
