@@ -186,6 +186,7 @@ mod syntax {
         literal::*,
         program,
         statement::*,
+        tokens::Token,
         types::*,
     };
 
@@ -210,6 +211,14 @@ mod syntax {
         assert_eq!(
             integer_literal().parse("12378"),
             Ok((Literal::Integer("12378".to_string()), ""))
+        )
+    }
+
+    #[test]
+    fn parse_boolean_literal() {
+        assert_eq!(
+            bool_literal().parse("true"),
+            Ok((Literal::Boolean(Token::True), ""))
         )
     }
 

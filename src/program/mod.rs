@@ -26,6 +26,10 @@ pub mod literal {
         integer().map(|x| Literal::Integer(x))
     }
 
+    pub fn bool_literal<'a>() -> Parser<'a, Literal> {
+        true_key().or(false_key()).map(|x| Literal::Boolean(x))
+    }
+
     pub fn reference_literal<'a>() -> Parser<'a, Literal> {
         identifier().map(|x| Literal::Reference(x))
     }
