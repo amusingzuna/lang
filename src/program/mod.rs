@@ -37,6 +37,7 @@ pub mod literal {
     pub fn literal<'a>() -> Parser<'a, Literal> {
         float_literal()
             .or(integer_literal())
+            .or(bool_literal())
             .or(reference_literal())
     }
 }
