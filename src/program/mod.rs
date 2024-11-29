@@ -79,12 +79,24 @@ pub mod statement {
             .map(|((a, b), c)| Statement::Instantiate(b, a, c))
     }
 
+    pub fn expression_statement<'a>() -> Parser<'a, Statement> {
+        expression().map(|x| Statement::Expression(x))
+    }
+
     pub fn no_op<'a>() -> Parser<'a, Statement> {
         Parser::pure(Statement::NoOp)
     }
 
     pub fn statement<'a>() -> Parser<'a, Statement> {
-        Parser::lazy(|| strip(instantiate().or(assignment()).or(declare()).or(no_op())))
+        Parser::lazy(|| {
+            strip(
+                instantiate()
+                    .or(assignment())
+                    .or(declare())
+                    .or(expression_statement())
+                    .or(no_op()),
+            )
+        })
     }
 }
 
