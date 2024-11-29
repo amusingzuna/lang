@@ -56,20 +56,6 @@ pub mod expression {
 pub mod statement {
     use super::prelude::*;
 
-    pub fn declare<'a>() -> Parser<'a, Statement> {
-        let_key()
-            .right(identifier())
-            .and(otherwise(colon().right(types()).map(|x| Some(x)), None))
-            .map(|(a, b)| Statement::Declare(b, a))
-    }
-
-    pub fn assignment<'a>() -> Parser<'a, Statement> {
-        identifier()
-            .left(equals())
-            .and(expression())
-            .map(|(name, expr)| Statement::Assignment(name, expr))
-    }
-
     pub fn instantiate<'a>() -> Parser<'a, Statement> {
         let_key()
             .right(identifier())
@@ -79,7 +65,25 @@ pub mod statement {
             .map(|((a, b), c)| Statement::Instantiate(b, a, c))
     }
 
-    pub fn expression_statement<'a>() -> Parser<'a, Statement> {
+    pub fn assignment<'a>() -> Parser<'a, Statement> {
+        identifier()
+            .left(equals())
+            .and(expression())
+            .map(|(name, expr)| Statement::Assignment(name, expr))
+    }
+
+    pub fn declare<'a>() -> Parser<'a, Statement> {
+        let_key()
+            .right(identifier())
+            .and(otherwise(colon().right(types()).map(|x| Some(x)), None))
+            .map(|(a, b)| Statement::Declare(b, a))
+    }
+
+    pub fn variable<'a>() -> Parser<'a, Statement> {
+        instantiate().or(assignment()).or(declare())
+    }
+
+    pub fn expression_stat<'a>() -> Parser<'a, Statement> {
         expression().map(|x| Statement::Expression(x))
     }
 
@@ -88,15 +92,7 @@ pub mod statement {
     }
 
     pub fn statement<'a>() -> Parser<'a, Statement> {
-        Parser::lazy(|| {
-            strip(
-                instantiate()
-                    .or(assignment())
-                    .or(declare())
-                    .or(expression_statement())
-                    .or(no_op()),
-            )
-        })
+        Parser::lazy(|| strip(variable().or(expression_stat()).or(no_op())))
     }
 }
 
