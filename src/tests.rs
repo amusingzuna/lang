@@ -180,7 +180,14 @@ mod library {
 
 #[cfg(test)]
 mod syntax {
-    use crate::{ast::*, literal::*, program, statement::*, types::*};
+    use crate::{
+        ast::*,
+        expression::{block_expr, literal_expr},
+        literal::*,
+        program,
+        statement::*,
+        types::*,
+    };
 
     #[test]
     fn parse_primitive() {
@@ -203,6 +210,37 @@ mod syntax {
         assert_eq!(
             integer_literal().parse("12378"),
             Ok((Literal::Integer("12378".to_string()), ""))
+        )
+    }
+
+    #[test]
+    fn parse_reference_literal() {
+        assert_eq!(
+            reference_literal().parse("jlfd3"),
+            Ok((Literal::Reference("jlfd3".to_string()), ""))
+        )
+    }
+
+    #[test]
+    fn parse_literal_expr() {
+        assert_eq!(
+            literal_expr().parse("123"),
+            Ok((Expression::Literal(Literal::Integer("123".to_string())), ""))
+        )
+    }
+
+    #[test]
+    fn parse_block_expr() {
+        assert_eq!(
+            block_expr().parse("{let a = 123;}"),
+            Ok((
+                Expression::Block(vec![Statement::Instantiate(
+                    None,
+                    "a".to_string(),
+                    Expression::Literal(Literal::Integer("123".to_string()))
+                )]),
+                ""
+            ))
         )
     }
 

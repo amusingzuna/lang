@@ -45,7 +45,7 @@ pub mod expression {
     }
 
     pub fn block_expr() -> Parser<'static, Expression> {
-        between(symbol("{"), statement(), symbol("}")).map(|_| Expression::Block(Vec::new()))
+        block(statement().left(semicolon()).many()).map(|x| Expression::Block(x))
     }
 
     pub fn expression() -> Parser<'static, Expression> {
