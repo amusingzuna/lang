@@ -214,7 +214,11 @@ mod syntax {
                 Statement::Declare(Some(Type::Primitive("int".to_string())), "a".to_string()),
                 ""
             ))
-        )
+        );
+        assert_eq!(
+            declare().parse("let a"),
+            Ok((Statement::Declare(None, "a".to_string()), ""))
+        );
     }
 
     #[test]
