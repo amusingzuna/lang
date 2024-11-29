@@ -1,10 +1,8 @@
 use std::sync::Arc;
 
-pub struct Parser<'input, T: 'input>(
-    Arc<dyn Fn(&'input str) -> Result<(T, &'input str), &'static str> + 'input>,
-);
+pub struct Parser<'a, T: 'a>(Arc<dyn Fn(&'a str) -> Result<(T, &'a str), &'static str> + 'a>);
 
-impl<'input, T: 'input> Clone for Parser<'input, T> {
+impl<'a, T: 'a> Clone for Parser<'a, T> {
     fn clone(&self) -> Self {
         Self(self.0.clone())
     }
