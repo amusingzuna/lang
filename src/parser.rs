@@ -122,8 +122,8 @@ impl<'a> Parser<'a, Vec<char>> {
     }
 }
 
-pub fn any() -> Parser<'static, char> {
-    Parser::new(move |input: &'static str| {
+pub fn any<'a>() -> Parser<'a, char> {
+    Parser::new(move |input: &'a str| {
         let mut chars = input.chars();
         match chars.next() {
             Some(c) => Ok((c, chars.as_str())),
@@ -132,8 +132,8 @@ pub fn any() -> Parser<'static, char> {
     })
 }
 
-pub fn char(expected: char) -> Parser<'static, char> {
-    Parser::new(move |input: &'static str| {
+pub fn char<'a>(expected: char) -> Parser<'a, char> {
+    Parser::new(move |input: &'a str| {
         let mut chars = input.chars();
         match chars.next() {
             Some(c) if c == expected => Ok((c, chars.as_str())),
@@ -142,57 +142,50 @@ pub fn char(expected: char) -> Parser<'static, char> {
     })
 }
 
-pub fn list(allowed: &[char]) -> Parser<'static, char> {
+pub fn list<'a>(allowed: &[char]) -> Parser<'a, char> {
     let fail = Parser::empty("List parser has no members");
     allowed.iter().fold(fail, |sum, x| sum.or(char(*x)))
 }
 
-pub fn whitespace() -> Parser<'static, char> {
+pub fn whitespace<'a>() -> Parser<'a, char> {
     list(&[' ', '\n', '\t', '\r'])
 }
 
-pub fn lowercase() -> Parser<'static, char> {
+pub fn lowercase<'a>() -> Parser<'a, char> {
     list(&[
         'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
         's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
     ])
 }
 
-pub fn uppercase() -> Parser<'static, char> {
+pub fn uppercase<'a>() -> Parser<'a, char> {
     list(&[
         'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
         'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
     ])
 }
 
-pub fn letter() -> Parser<'static, char> {
+pub fn letter<'a>() -> Parser<'a, char> {
     lowercase().or(uppercase()).or(char('_'))
 }
 
-pub fn digit() -> Parser<'static, char> {
+pub fn digit<'a>() -> Parser<'a, char> {
     list(&['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'])
 }
 
-pub fn alphanumeric() -> Parser<'static, char> {
+pub fn alphanumeric<'a>() -> Parser<'a, char> {
     letter().or(digit())
 }
 
-pub fn between<T, U, P>(
-    a: Parser<'static, T>,
-    b: Parser<'static, U>,
-    c: Parser<'static, P>,
-) -> Parser<'static, U> {
+pub fn between<'a, T, U, P>(a: Parser<'a, T>, b: Parser<'a, U>, c: Parser<'a, P>) -> Parser<'a, U> {
     a.right(b).left(c)
 }
 
-pub fn otherwise<T: Clone>(b: Parser<'static, T>, a: T) -> Parser<'static, T> {
+pub fn otherwise<'a, T: Clone>(b: Parser<'a, T>, a: T) -> Parser<'a, T> {
     b.or(Parser::pure(a))
 }
 
-pub fn delimited<T: Clone, U>(
-    a: Parser<'static, T>,
-    sep: Parser<'static, U>,
-) -> Parser<'static, Vec<T>> {
+pub fn delimited<'a, T: Clone, U>(a: Parser<'a, T>, sep: Parser<'a, U>) -> Parser<'a, Vec<T>> {
     otherwise(
         a.clone().and(sep.right(a).many()).map(|(first, mut rest)| {
             rest.insert(0, first);
@@ -202,11 +195,11 @@ pub fn delimited<T: Clone, U>(
     )
 }
 
-pub fn strip<T>(a: Parser<'static, T>) -> Parser<'static, T> {
+pub fn strip<'a, T>(a: Parser<'a, T>) -> Parser<'a, T> {
     between(whitespace().many(), a, whitespace().many())
 }
 
-pub fn string(input: &'static str) -> Parser<'static, String> {
+pub fn string<'a>(input: &'a str) -> Parser<'a, String> {
     if input.is_empty() {
         return Parser::pure("".to_string());
     }
@@ -221,7 +214,7 @@ pub fn string(input: &'static str) -> Parser<'static, String> {
         })
 }
 
-pub fn identifier() -> Parser<'static, String> {
+pub fn identifier<'a>() -> Parser<'a, String> {
     strip(letter().and(alphanumeric().many()).map(|(first, rest)| {
         let mut result = String::new();
         result.push(first);
@@ -230,27 +223,27 @@ pub fn identifier() -> Parser<'static, String> {
     }))
 }
 
-pub fn symbol(a: &'static str) -> Parser<'static, String> {
+pub fn symbol<'a>(a: &'a str) -> Parser<'a, String> {
     strip(string(a))
 }
 
-pub fn tuple<T>(a: Parser<'static, T>) -> Parser<'static, T> {
+pub fn tuple<'a, T>(a: Parser<'a, T>) -> Parser<'a, T> {
     between(symbol("("), a, symbol(")"))
 }
 
-pub fn set<T>(a: Parser<'static, T>) -> Parser<'static, T> {
+pub fn set<'a, T>(a: Parser<'a, T>) -> Parser<'a, T> {
     between(symbol("["), a, symbol("]"))
 }
 
-pub fn block<T>(a: Parser<'static, T>) -> Parser<'static, T> {
+pub fn block<'a, T>(a: Parser<'a, T>) -> Parser<'a, T> {
     between(symbol("{"), a, symbol("}"))
 }
 
-pub fn integer() -> Parser<'static, String> {
+pub fn integer<'a>() -> Parser<'a, String> {
     strip(digit().some().map(|c| c.into_iter().collect()))
 }
 
-pub fn float() -> Parser<'static, String> {
+pub fn float<'a>() -> Parser<'a, String> {
     strip(
         digit()
             .some()

@@ -8,18 +8,18 @@ pub enum Token {
     Semicolon,
 }
 
-pub fn let_key() -> Parser<'static, Token> {
+pub fn let_key<'a>() -> Parser<'a, Token> {
     symbol("let").right(Parser::pure(Token::Let))
 }
 
-pub fn equals() -> Parser<'static, Token> {
+pub fn equals<'a>() -> Parser<'a, Token> {
     symbol("=").right(Parser::pure(Token::Equals))
 }
 
-pub fn colon() -> Parser<'static, Token> {
+pub fn colon<'a>() -> Parser<'a, Token> {
     symbol(":").right(Parser::pure(Token::Colon))
 }
 
-pub fn semicolon() -> Parser<'static, Token> {
+pub fn semicolon<'a>() -> Parser<'a, Token> {
     symbol(";").right(Parser::pure(Token::Semicolon))
 }
