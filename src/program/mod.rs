@@ -43,9 +43,10 @@ pub mod statement {
     use super::prelude::*;
 
     pub fn declare() -> Parser<'static, Statement> {
-        types()
-            .and(identifier())
-            .map(|(a, b)| Statement::Declare(a, b))
+        r#let()
+            .right(identifier())
+            .and(otherwise(colon().right(types()).map(|x| Some(x)), None))
+            .map(|(a, b)| Statement::Declare(b, a))
     }
 
     pub fn assignment() -> Parser<'static, Statement> {

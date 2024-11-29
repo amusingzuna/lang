@@ -16,7 +16,7 @@ pub enum Expression {
 
 #[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Statement {
-    Declare(Type, String),
+    Declare(Option<Type>, String),
     Assignment(String, Expression),
     Instantiate(Type, String, Expression),
     NoOp,

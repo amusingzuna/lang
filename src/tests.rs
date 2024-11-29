@@ -209,9 +209,9 @@ mod syntax {
     #[test]
     fn parse_declare() {
         assert_eq!(
-            declare().parse("int a"),
+            declare().parse("let a: int"),
             Ok((
-                Statement::Declare(Type::Primitive("int".to_string()), "a".to_string()),
+                Statement::Declare(Some(Type::Primitive("int".to_string())), "a".to_string()),
                 ""
             ))
         )
@@ -249,14 +249,8 @@ mod syntax {
     #[test]
     fn parse_program() {
         assert_eq!(
-            program().parse("int a;"),
-            Ok((
-                Program(vec![Statement::Declare(
-                    Type::Primitive("int".to_string()),
-                    "a".to_string()
-                )]),
-                ""
-            ))
+            program().parse("let a;"),
+            Ok((Program(vec![Statement::Declare(None, "a".to_string())]), ""))
         );
     }
 }
