@@ -8,9 +8,10 @@ pub mod tokens;
 pub mod types;
 
 pub mod prelude {
-    pub use super::ast::*;
-    pub use super::tokens::*;
-    pub use super::{expression::expression, literal::literal, statement::statement, types::types};
+    pub use super::{
+        ast::*, expression::expression, literal::literal, statement::statement, tokens::*,
+        types::types,
+    };
     pub use crate::parser::*;
 }
 
