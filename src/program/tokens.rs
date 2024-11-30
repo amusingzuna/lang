@@ -8,6 +8,7 @@ pub enum Token {
     Equals,
     Colon,
     Semicolon,
+    Comma,
 }
 
 pub fn let_key<'a>() -> Parser<'a, Token> {
@@ -32,4 +33,8 @@ pub fn colon<'a>() -> Parser<'a, Token> {
 
 pub fn semicolon<'a>() -> Parser<'a, Token> {
     symbol(";").right(Parser::pure(Token::Semicolon))
+}
+
+pub fn comma<'a>() -> Parser<'a, Token> {
+    symbol(",").right(Parser::pure(Token::Comma))
 }

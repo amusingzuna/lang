@@ -18,6 +18,15 @@ pub fn bool_literal<'a>() -> Parser<'a, Literal> {
     })
 }
 
+pub fn array_literal<'a>() -> Parser<'a, Literal> {
+    let static_parser = set(expression().left(semicolon()).and(expression()))
+        .map(|(x, y)| Literal::Array(Array::Static(Box::new(x), Box::new(y))));
+    let dynamic_parser =
+        set(delimited(expression(), comma())).map(|x| Literal::Array(Array::Dynamic(x)));
+
+    static_parser.or(dynamic_parser)
+}
+
 pub fn reference_literal<'a>() -> Parser<'a, Literal> {
     identifier().map(|x| Literal::Reference(x))
 }
@@ -26,5 +35,6 @@ pub fn literal<'a>() -> Parser<'a, Literal> {
     float_literal()
         .or(integer_literal())
         .or(bool_literal())
+        .or(array_literal())
         .or(reference_literal())
 }
