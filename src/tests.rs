@@ -270,9 +270,9 @@ mod syntax {
     #[test]
     fn parse_assignment() {
         assert_eq!(
-            assignment().parse("a = 50"),
+            assign().parse("a = 50"),
             Ok((
-                Statement::Assignment(
+                Statement::Assign(
                     "a".to_string(),
                     Expression::Literal(Literal::Integer("50".to_string()))
                 ),

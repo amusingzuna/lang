@@ -9,11 +9,11 @@ pub fn instantiate<'a>() -> Parser<'a, Statement> {
         .map(|((a, b), c)| Statement::Instantiate(b, a, c))
 }
 
-pub fn assignment<'a>() -> Parser<'a, Statement> {
+pub fn assign<'a>() -> Parser<'a, Statement> {
     identifier()
         .left(equals())
         .and(expression())
-        .map(|(name, expr)| Statement::Assignment(name, expr))
+        .map(|(name, expr)| Statement::Assign(name, expr))
 }
 
 pub fn declare<'a>() -> Parser<'a, Statement> {
@@ -24,7 +24,7 @@ pub fn declare<'a>() -> Parser<'a, Statement> {
 }
 
 pub fn variable<'a>() -> Parser<'a, Statement> {
-    instantiate().or(assignment()).or(declare())
+    instantiate().or(assign()).or(declare())
 }
 
 pub fn expression_stat<'a>() -> Parser<'a, Statement> {
