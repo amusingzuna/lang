@@ -5,17 +5,10 @@ pub enum Type {
 }
 
 #[derive(PartialEq, Eq, Debug, Clone)]
-pub enum Array {
-    Static(Box<Expression>, Box<Expression>),
-    Dynamic(Vec<Expression>),
-}
-
-#[derive(PartialEq, Eq, Debug, Clone)]
 pub enum Literal {
     Float(String),
     Integer(String),
     Boolean(bool),
-    Array(Array),
     Reference(String),
 }
 
