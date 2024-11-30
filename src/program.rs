@@ -1,7 +1,76 @@
-pub mod ast;
-pub mod tokens;
-
 use prelude::*;
+
+pub mod tokens {
+    use super::prelude::*;
+
+    #[derive(PartialEq, Eq, Debug, Clone)]
+    pub enum Token {
+        Let,
+        True,
+        False,
+        Equals,
+        Colon,
+        Semicolon,
+    }
+
+    pub fn let_key<'a>() -> Parser<'a, Token> {
+        symbol("let").right(Parser::pure(Token::Let))
+    }
+
+    pub fn true_key<'a>() -> Parser<'a, Token> {
+        symbol("true").right(Parser::pure(Token::True))
+    }
+
+    pub fn false_key<'a>() -> Parser<'a, Token> {
+        symbol("false").right(Parser::pure(Token::False))
+    }
+
+    pub fn equals<'a>() -> Parser<'a, Token> {
+        symbol("=").right(Parser::pure(Token::Equals))
+    }
+
+    pub fn colon<'a>() -> Parser<'a, Token> {
+        symbol(":").right(Parser::pure(Token::Colon))
+    }
+
+    pub fn semicolon<'a>() -> Parser<'a, Token> {
+        symbol(";").right(Parser::pure(Token::Semicolon))
+    }
+}
+
+pub mod ast {
+    #[derive(PartialEq, Eq, Debug, Clone)]
+    pub enum Type {
+        Atomic(String),
+        Array(Box<Type>),
+    }
+
+    #[derive(PartialEq, Eq, Debug, Clone)]
+    pub enum Literal {
+        Float(String),
+        Integer(String),
+        Boolean(bool),
+        Reference(String),
+    }
+
+    #[derive(PartialEq, Eq, Debug, Clone)]
+    pub enum Expression {
+        Block(Vec<Statement>),
+        Literal(Literal),
+    }
+
+    #[derive(PartialEq, Eq, Debug, Clone)]
+    pub enum Statement {
+        Declare(Option<Type>, String),
+        Assignment(String, Expression),
+        Instantiate(Option<Type>, String, Expression),
+        Expression(Expression),
+        NoOp,
+    }
+
+    #[derive(PartialEq, Eq, Debug)]
+    pub struct Program(pub Vec<Statement>);
+}
 
 pub mod types {
     use super::prelude::*;
@@ -10,8 +79,12 @@ pub mod types {
         identifier().map(|c| Type::Atomic(c))
     }
 
+    pub fn array<'a>() -> Parser<'a, Type> {
+        set(types()).map(|c| Type::Array(Box::new(c)))
+    }
+
     pub fn types<'a>() -> Parser<'a, Type> {
-        atomic()
+        Parser::lazy(|| array().or(atomic()))
     }
 }
 
